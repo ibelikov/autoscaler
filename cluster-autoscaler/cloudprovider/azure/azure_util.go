@@ -75,6 +75,9 @@ const (
 	k8sWindowsVMAgentPoolPrefixIndex       = 1
 	k8sWindowsVMAgentOrchestratorNameIndex = 2
 	k8sWindowsVMAgentPoolInfoIndex         = 3
+
+	nodeLabelTagName = "k8s.io|cluster-autoscaler|node-template|label|"
+	nodeTaintTagName = "k8s.io|cluster-autoscaler|node-template|taint|"
 )
 
 var (
