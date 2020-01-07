@@ -258,3 +258,45 @@ func (m *DeploymentsClientMock) CreateOrUpdate(ctx context.Context, resourceGrou
 	deploy.Properties.Template = parameters.Properties.Template
 	return nil, nil
 }
+
+// List gets all the deployments for a resource group.
+func (m *DeploymentsClientMock) List(ctx context.Context, resourceGroupName, filter string, top *int32) (result []resources.DeploymentExtended, err error) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	result = make([]resources.DeploymentExtended, 0)
+	for i := range m.FakeStore {
+		result = append(result, m.FakeStore[i])
+	}
+
+	return result, nil
+}
+
+// Delete deletes the given deployment
+func (m *DeploymentsClientMock) Delete(ctx context.Context, resourceGroupName, deploymentName string) (resp *http.Response, err error) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	if _, ok := m.FakeStore[deploymentName]; !ok {
+		return nil, fmt.Errorf("there is no such a deployment with name %s", deploymentName)
+	}
+
+	delete(m.FakeStore, deploymentName)
+
+	return
+}
+
+func fakeVMSSWithTags(vmssName string, tags map[string]*string) compute.VirtualMachineScaleSet {
+	skuName := "Standard_D4_v2"
+	var vmssCapacity int64 = 3
+
+	return compute.VirtualMachineScaleSet{
+		Name: &vmssName,
+		Sku: &compute.Sku{
+			Capacity: &vmssCapacity,
+			Name:     &skuName,
+		},
+		Tags: tags,
+	}
+
+}
